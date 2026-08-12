@@ -1,0 +1,42 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python and environments
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.ruff_cache/
+
+# Generated and installed state
+dist/
+.cache/
+.runtime/
+.obsidian/
+.codex-install-backup/
+*.log
+
+# Dependencies and editor state
+node_modules/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Private Vault content roots
+/Bases/
+/Ideas/
+/Knowledge/
+/Learning/
+/Logs/
+/Projects/
+/Research/
+
+# User instance rules
+/_CLAUDE.md

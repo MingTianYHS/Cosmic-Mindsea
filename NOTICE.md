@@ -1,29 +1,16 @@
-# Notices and provenance
+# Notice
 
-## Upstream Skill system
+Cosmic Mindsea is a Codex-focused adaptation derived from the following upstream project:
 
-This distribution includes and adapts installed Agent Skills from:
+- **Upstream:** `eugeniughelbur/obsidian-second-brain`
+- **Repository:** https://github.com/eugeniughelbur/obsidian-second-brain
+- **Pinned commit:** `4d5b6738d79cca0b222e7874798c039a0dfd53b3`
+- **Original author:** Eugeniu Ghelbur
+- **License:** MIT
 
-- Project: `obsidian-second-brain`
-- Repository: <https://github.com/eugeniughelbur/obsidian-second-brain>
-- Upstream author: Eugeniu Ghelbur
-- License: MIT
-- Installed version represented by this distribution: `0.14.0`
+The upstream MIT license and copyright notice are preserved in `LICENSE`.
 
-The upstream copyright and MIT license are preserved in [`LICENSE`](LICENSE).
+This adaptation retains selected platform-neutral commands, references, scripts, Python project metadata, and the recommended Agent Skills adapter. It adds Codex-focused repository documentation, Windows PowerShell installation and verification wrappers, distribution tests, privacy checks, and pre-generated `.agents/skills/` output.
 
-## Cosmic Mindsea additions
-
-This distribution packages the upstream-derived Skill installation together with:
-
-- the Cosmic Mindsea Vault operating manual in `_CLAUDE.md`;
-- the Cosmic Mindsea instance configuration in `.vault-config.json`;
-- Windows-oriented installation and verification scripts;
-- repository documentation describing deployment, privacy, provenance, and maintenance boundaries.
-
-The repository intentionally excludes the owner's private knowledge notes, logs, runtime state, API credentials, Obsidian application state, Python virtual environments, and installed dependency copies.
-
-## Other third-party notices
-
-Individual scripts may mention or integrate with external projects and services. Their names and references remain in the relevant source files. Provider names do not imply endorsement of Cosmic Mindsea, and use of provider APIs remains subject to each provider's terms.
+Unless a file states otherwise, the adaptation-specific additions are distributed under the same MIT license. This project is independently maintained and is not an official OpenAI or Obsidian product.
 

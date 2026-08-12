@@ -1,158 +1,133 @@
-# Cosmic Mindsea Knowledge System
+# Cosmic Mindsea
 
-Cosmic Mindsea Knowledge System 是一个可部署到 Obsidian Vault 的 Agent 驱动知识库管理工具发行版。它把以下三层作为同一个可迭代系统进行版本控制：
+面向 **OpenAI Codex / Agent Skills** 的 Obsidian 知识库管理技能发行版。
 
-1. `.agents/skills/`：技能、共享规则、Python 工具和集成代码；
-2. `_CLAUDE.md`：Agent 在 Cosmic Mindsea Vault 中工作的治理规则；
-3. `.vault-config.json`：Vault 扫描和运行配置。
+本仓库基于 [eugeniughelbur/obsidian-second-brain](https://github.com/eugeniughelbur/obsidian-second-brain) 的固定源码快照进行适配，保留可维护源码，并提交可直接安装的 `.agents/skills/` 生成产物。当前发行版包含：
 
-本仓库**不包含真实知识库内容**。`Knowledge/`、`Ideas/`、`Projects/`、`Research/`、日志、Obsidian 状态和运行缓存均被排除。
+- **45 个命令 Skill**：捕获、检索、项目、任务、复盘、研究、知识库健康等；
+- **1 个 `obsidian-core` Skill**：共享规则、Python 工具和运行资产；
+- 共 **46 个 Skill 目录**。
 
-## 项目状态
+> 本仓库是工具源码和技能发行版，不是某个用户的 Obsidian Vault。仓库不包含私人笔记、Obsidian 状态、运行缓存、日志、备份或密钥，也不会在克隆或验证时自动写入任何真实 Vault。
 
-- Skill 体系来源：[eugeniughelbur/obsidian-second-brain](https://github.com/eugeniughelbur/obsidian-second-brain)
-- 本地安装版本：`0.14.0`
-- 当前发行形态：Agent Skills 安装/运行树，加 Cosmic Mindsea 实例治理与配置
-- 主要平台：Windows、PowerShell、Obsidian、Codex/Claude 类 Agent
+## 快速使用
 
-> 重要：本仓库保存的是当前真实运行工具的干净发行副本。很多命令 `SKILL.md` 是上游构建生成的 wrapper。若要进行大规模命令开发或向上游贡献，请同时使用完整上游源码中的 `commands/`、`adapters/`、`tests/` 和 CI，而不要只手工修改生成文件。
-
-## 目录
-
-```text
-.
-├─ .agents/
-│  └─ skills/
-│     ├─ obsidian-core/       # 公共规则、脚本、依赖定义和集成
-│     └─ <command skills>/    # 45 个命令 Skill
-├─ docs/
-│  ├─ architecture.md
-│  ├─ privacy.md
-│  └─ upstream.md
-├─ _CLAUDE.md                 # Cosmic Mindsea 治理规则
-├─ .vault-config.json         # Vault 排除配置
-├─ install.ps1                # Windows 安装/更新入口
-├─ verify.ps1                 # 上传或发布前自检
-├─ LICENSE
-└─ NOTICE.md
-```
-
-## 能做什么
-
-Skills 覆盖以下能力：
-
-- 捕获想法、人物、任务、项目和决策；
-- 创建每日笔记、项目记录、周/月回顾；
-- 搜索、索引、健康检查、矛盾发现和知识综合；
-- 研究、YouTube、Podcast、NotebookLM 和 X 内容处理；
-- 将代码架构、开发过程和研究结果写入 Vault；
-- 按 AI-first 规则保存来源、时间、置信度和 wikilink。
-
-Skill 不会自己作为后台服务自动运行。Codex、Claude 或兼容 Agent 在处理用户请求时读取对应的 `SKILL.md`，再调用公共脚本或按规则操作 Vault。
-
-## 安装
-
-### 前提
-
-- Windows PowerShell 5.1 或 PowerShell 7；
-- 一个现有或空的 Obsidian Vault 目录；
-- 若使用 Python 研究/健康工具，需要 Python 3.10+ 和项目文档要求的 `uv`；
-- 联网研究功能可能需要相应 Provider 的 API Key，但 Key 不应存储在本仓库。
-
-### 先验证发行包
+### 1. 克隆仓库
 
 ```powershell
-Set-Location '<仓库目录>'
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File '.\verify.ps1'
+git clone https://github.com/MingTianYHS/Cosmic-Mindsea.git
+Set-Location .\Cosmic-Mindsea
 ```
 
-### 预览安装，不修改目标 Vault
+### 2. 先预览安装范围
+
+请将示例路径改成你自己的 Vault 路径：
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File '.\install.ps1' `
-  -VaultPath 'D:\Your Vault' -WhatIf
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 `
+  -VaultPath 'D:\Path\To\Your Vault' `
+  -WhatIf
 ```
 
-### 安装或更新
+预览确认后再去掉 `-WhatIf`：
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File '.\install.ps1' `
-  -VaultPath 'D:\Your Vault'
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 `
+  -VaultPath 'D:\Path\To\Your Vault'
 ```
 
-这里的 `-ExecutionPolicy Bypass` 只作用于这一个新 PowerShell 进程，不修改用户或系统的永久执行策略。
+安装器只复制仓库中的 `.agents/skills/`：
 
-安装器只部署：
+- 不会删除 Vault 内的普通笔记；
+- 不会删除其他自定义 Skill；
+- 若目标中存在同名的本仓库受管 Skill，会先备份到：
+  `.agents/.codex-install-backup/<UTC 时间戳>/`；
+- 没有默认 Vault 路径，必须由使用者明确传入 `-VaultPath`。
+
+建议从 Vault 根目录启动 Codex，让工作区的 `.agents/skills/<name>/SKILL.md` 可以被发现，并让相对的共享资产路径稳定解析。
+
+## 验证
+
+需要 Python 3.10+：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\verify.ps1 `
+  -ProjectRoot .
+```
+
+验证器会只读检查：
+
+- Skill 目录与 `SKILL.md`；
+- frontmatter `name` 与目录名是否一致；
+- `obsidian-core` 的必要运行资产；
+- 私有 Vault 根目录、运行目录和弃用/外部平台适配器是否混入；
+- 常见私钥和 Token 格式。
+
+运行自动化测试：
+
+```powershell
+python -m unittest discover -s tests -p 'test_*.py' -v
+```
+
+## 从源码重新生成 Skills
+
+仓库采用“源码 + 生成产物”的混合结构：
+
+- `commands/`、`references/`、`scripts/`：规范源码；
+- `adapters/lib.sh`、`adapters/agent-skills/adapter.sh`：Agent Skills 构建器；
+- `.agents/skills/`：供 Codex 直接使用的生成产物。
+
+在 Git Bash、WSL 或其他 Bash 环境中运行：
+
+```bash
+bash scripts/build.sh --platform agent-skills
+```
+
+输出位于：
 
 ```text
-.agents/skills/
-_CLAUDE.md
-.vault-config.json
+dist/agent-skills/skills/
 ```
 
-如果目标中已有这些路径，安装器会先备份到：
+开发者应修改源码后重新构建，再用验证器比较生成结果：
 
-```text
-<Vault>\.codex-install-backup\YYYYMMDDTHHMMSSZ\
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\verify.ps1 `
+  -ProjectRoot . `
+  -CompareGenerated .\dist\agent-skills\skills
 ```
 
-安装器不会复制或修改 `Knowledge/`、`Ideas/`、`Projects/` 等知识目录。
+不要只手工修改 `.agents/skills/` 而不更新对应源码，否则后续重建会覆盖变更。
 
-## 开发原则
+## 可选配置与依赖
 
-### 可以在本仓库维护
+多数知识库管理 Skills 不需要第三方 API Key。研究类功能会按使用场景选择性读取 `.env.example` 中列出的变量，例如 xAI、Perplexity、Gemini、Tavily、Brave 或 YouTube API。空值只是占位符，不是密钥。
 
-- Cosmic Mindsea 的 `_CLAUDE.md` 和 `.vault-config.json`；
-- Windows/Codex 安装和验证体验；
-- 通用 Skill 修复和脚本改进；
-- 隐私、离线和 Provider 控制；
-- 文档、虚构示例和兼容性测试。
+如果需要 Python 研究工具依赖，可使用上游保留的项目元数据：
 
-### 修改生成 Skill 时要谨慎
-
-多数命令 `SKILL.md` 来自上游 canonical command 和 Agent Skills adapter。直接修改本仓库中的 wrapper 可以改变这个发行版，但升级上游时容易被覆盖。长期改进应优先在完整上游源码中修改：
-
-```text
-commands/
-references/
-scripts/
-adapters/
-integrations/
-tests/
+```powershell
+uv sync
 ```
 
-详情见 [`docs/upstream.md`](docs/upstream.md)。
+然后将 `.env.example` 复制到你自行管理的私有配置位置并填写所需值。**不要提交 `.env`。** 使用云端模型或嵌入服务时，笔记内容可能被发送给该服务；请先评估隐私范围。未配置可选 API 时，相关功能可能降级或不可用，但这不影响仓库结构验证。
 
-## 隐私和网络
+## 隐私与安全边界
 
-普通 Vault 文件操作通常是本地的，但研究、YouTube、Podcast、NotebookLM、X、链接 triage 等功能可能访问外部服务并发送查询、来源或有限的笔记上下文。启用前请阅读 [`docs/privacy.md`](docs/privacy.md)。
+本仓库明确排除：
 
-永远不要提交：
+- `.env`、Token、API Key、认证文件和私钥；
+- `.obsidian/`、`.cache/`、`.runtime/`、`.venv/`；
+- 安装备份、日志和生成缓存；
+- 用户的 `Bases/`、`Ideas/`、`Knowledge/`、`Learning/`、`Logs/`、`Projects/`、`Research/` 等 Vault 内容目录；
+- 用户实例专属 `_CLAUDE.md` 和其他私人规则文件。
 
-- `.env`、API Key、Token 或账号凭据；
-- 真实私人笔记、日志和测试 fixture；
-- `.venv`、`.deps`、缓存或 Obsidian 运行状态；
-- 从真实 Vault 复制的截图或示例数据。
+安装脚本具有写入用户指定 Vault 的能力，所以请始终先运行 `-WhatIf`、确认绝对路径并保留备份。仓库自身不会自动执行安装。
 
-## 验证范围
+## 来源与许可证
 
-`verify.ps1` 检查：
+- 上游项目：[`eugeniughelbur/obsidian-second-brain`](https://github.com/eugeniughelbur/obsidian-second-brain)
+- 固定上游提交：`4d5b6738d79cca0b222e7874798c039a0dfd53b3`
+- 原作者：Eugeniu Ghelbur
+- 许可证：MIT
 
-- 必需的项目文件；
-- `.vault-config.json` JSON 有效性；
-- 46 个 Skill 目录及其 `SKILL.md`；
-- 不存在 `.venv`、`.deps`、`__pycache__` 和 `.pyc`；
-- 常见真实密钥格式和私钥头；
-- 若本机有 Python，则检查项目 Python 文件语法。
-
-这不等于完整上游测试。完整功能开发仍应在上游完整源码仓库中运行其 Ruff、pytest、构建和多平台 CI。
-
-## 许可证与来源
-
-本仓库包含并改编自 `obsidian-second-brain` 的 MIT 许可内容。请参阅：
-
-- [`LICENSE`](LICENSE)
-- [`NOTICE.md`](NOTICE.md)
-- [`docs/upstream.md`](docs/upstream.md)
-
-Cosmic Mindsea 的实例治理和配置与上游 Skill 发行内容一起分发，但这不改变上游代码的原始版权和许可证要求。
+详见 [`NOTICE.md`](NOTICE.md) 和 [`LICENSE`](LICENSE)。
